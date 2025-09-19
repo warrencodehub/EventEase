@@ -1,0 +1,74 @@
+@page "/event/{Id:int}"
+@using EventEase.Models
+@using EventEase.Components
+@inject NavigationManager NavigationManager
+
+<div class="container mt-4">
+    @if (selectedEvent != null)
+    {
+        <h2>@selectedEvent.Title</h2>
+        <div class="row mt-4">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Event Details</h5>
+                        <p class="card-text">@selectedEvent.Description</p>
+                        <p class="card-text">
+                            <strong>Date:</strong> @selectedEvent.Date.ToLongDateString()
+                        </p>
+                        <p class="card-text">
+                            <strong>Location:</strong> @selectedEvent.Location
+                        </p>
+                        <p class="card-text">
+                            <strong>Available Spots:</strong> 
+                            @(selectedEvent.MaxAttendees - selectedEvent.CurrentAttendees) of @selectedEvent.MaxAttendees
+                        </p>
+                        <div class="mt-4">
+                            <AttendanceTracker Event="selectedEvent" OnRegister="NavigateToRegistration" />
+                        </div>
+                        <div class="mt-4">
+                            <button class="btn btn-secondary" @onclick="NavigateBack">Back to Events</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <p>Event not found.</p>
+        <button class="btn btn-secondary" @onclick="NavigateBack">Back to Events</button>
+    }
+</div>
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    private Event? selectedEvent;
+
+    protected override void OnInitialized()
+    {
+        // In a real application, this would fetch from a service
+        selectedEvent = new Event
+        {
+            Id = Id,
+            Title = "Sample Event",
+            Description = "This is a sample event description.",
+            Date = DateTime.Now.AddDays(30),
+            Location = "Sample Location",
+            MaxAttendees = 100,
+            CurrentAttendees = 50
+        };
+    }
+
+    private void NavigateToRegistration()
+    {
+        NavigationManager.NavigateTo($"/register/{Id}");
+    }
+
+    private void NavigateBack()
+    {
+        NavigationManager.NavigateTo("/");
+    }
+}

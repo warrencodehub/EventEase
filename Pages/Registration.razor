@@ -1,0 +1,87 @@
+@page "/register/{EventId:int}"
+@using EventEase.Models
+@using Microsoft.AspNetCore.Components.Forms
+@using EventEase.Services
+@inject NavigationManager NavigationManager
+@inject StateContainer StateContainer
+
+<div class="container mt-4">
+    <h2>Event Registration</h2>
+    
+    <EditForm Model="@registrationModel" OnValidSubmit="HandleValidSubmit">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+
+        <div class="mb-3">
+            <label for="firstName" class="form-label">First Name</label>
+            <InputText id="firstName" class="form-control" @bind-Value="registrationModel.FirstName" />
+            <ValidationMessage For="@(() => registrationModel.FirstName)" />
+        </div>
+
+        <div class="mb-3">
+            <label for="lastName" class="form-label">Last Name</label>
+            <InputText id="lastName" class="form-control" @bind-Value="registrationModel.LastName" />
+            <ValidationMessage For="@(() => registrationModel.LastName)" />
+        </div>
+
+        <div class="mb-3">
+            <label for="email" class="form-label">Email</label>
+            <InputText id="email" class="form-control" @bind-Value="registrationModel.Email" />
+            <ValidationMessage For="@(() => registrationModel.Email)" />
+        </div>
+
+        <div class="mb-3">
+            <label for="phoneNumber" class="form-label">Phone Number</label>
+            <InputText id="phoneNumber" class="form-control" @bind-Value="registrationModel.PhoneNumber" />
+            <ValidationMessage For="@(() => registrationModel.PhoneNumber)" />
+        </div>
+
+        <div class="mb-3 form-check">
+            <InputCheckbox id="acceptTerms" class="form-check-input" @bind-Value="registrationModel.AcceptTerms" />
+            <label class="form-check-label" for="acceptTerms">
+                I accept the terms and conditions
+            </label>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Register</button>
+        <button type="button" class="btn btn-secondary" @onclick="NavigateBack">Cancel</button>
+    </EditForm>
+</div>
+
+@code {
+    [Parameter]
+    public int EventId { get; set; }
+
+    private RegistrationModel registrationModel = new();
+    private Event? eventDetails;
+
+    protected override void OnInitialized()
+    {
+        // In a real application, this would fetch from a service
+        eventDetails = new Event
+        {
+            Id = EventId,
+            Title = "Sample Event",
+            Description = "This is a sample event description.",
+            Date = DateTime.Now.AddDays(30),
+            Location = "Sample Location",
+            MaxAttendees = 100,
+            CurrentAttendees = 50
+        };
+    }
+
+    private void HandleValidSubmit()
+    {
+        // Add the event to the user's registered events
+        StateContainer.AddRegisteredEvent(EventId);
+        
+        // Here you would typically save the registration to a database
+        // For now, we'll just navigate back to the event details
+        NavigationManager.NavigateTo($"/event/{EventId}");
+    }
+
+    private void NavigateBack()
+    {
+        NavigationManager.NavigateTo($"/event/{EventId}");
+    }
+}

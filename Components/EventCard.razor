@@ -1,0 +1,38 @@
+@using EventEase.Models
+@inject NavigationManager NavigationManager
+
+<div class="card" style="width: 18rem;">
+    <div class="card-body">
+        <h5 class="card-title">@Event.Title</h5>
+        <p class="card-text">@Event.Description</p>
+        <p class="card-text"><small class="text-muted">@Event.Date.ToShortDateString()</small></p>
+        <p class="card-text"><i class="bi bi-geo-alt"></i> @Event.Location</p>
+        <p class="card-text">
+            <i class="bi bi-people"></i> @Event.CurrentAttendees / @Event.MaxAttendees
+        </p>
+        <button class="btn btn-secondary" @onclick="ViewDetails">View Details</button>
+        <button class="btn btn-primary" @onclick="OnRegisterClick">Register</button>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public required Event Event { get; set; }
+
+    [Parameter]
+    public EventCallback<Event> OnRegister { get; set; }
+
+    private async Task OnRegisterClick()
+    {
+        if (Event.CurrentAttendees < Event.MaxAttendees)
+        {
+            Event.CurrentAttendees++;
+            await OnRegister.InvokeAsync(Event);
+        }
+    }
+
+    private void ViewDetails()
+    {
+        NavigationManager.NavigateTo($"/event/{Event.Id}");
+    }
+}

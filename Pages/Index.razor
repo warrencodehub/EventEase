@@ -1,0 +1,48 @@
+@page "/"
+@using EventEase.Models
+@using EventEase.Components
+@using Microsoft.AspNetCore.Components
+
+<PageTitle>EventEase - Events</PageTitle>
+
+<h1>Upcoming Events</h1>
+
+<div class="row">
+    @foreach (var eventItem in events)
+    {
+        <div class="col-md-4 mb-4">
+            <EventCard Event="eventItem" OnRegister="HandleRegistration" />
+        </div>
+    }
+</div>
+
+@code {
+    private List<Event> events = new List<Event>
+    {
+        new Event
+        {
+            Id = 1,
+            Title = "Tech Conference 2025",
+            Description = "Join us for the latest in technology trends and innovations.",
+            Date = DateTime.Now.AddDays(30),
+            Location = "Seattle Convention Center",
+            MaxAttendees = 200,
+            CurrentAttendees = 150
+        },
+        new Event
+        {
+            Id = 2,
+            Title = "Web Development Workshop",
+            Description = "Hands-on workshop covering modern web development techniques.",
+            Date = DateTime.Now.AddDays(15),
+            Location = "Virtual Event",
+            MaxAttendees = 50,
+            CurrentAttendees = 35
+        }
+    };
+
+    private void HandleRegistration(Event updatedEvent)
+    {
+        StateHasChanged();
+    }
+}
